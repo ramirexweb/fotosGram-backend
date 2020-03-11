@@ -1,1 +1,10 @@
-console.log('hola maldito mundo... Ramirex XD');
+import Server from './classes/server';
+
+
+const server = new Server();
+
+
+// init express
+server.start( () => {
+    console.log(`Servidor corriendo en puerto ${ server.port}`);
+});
