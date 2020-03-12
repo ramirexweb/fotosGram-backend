@@ -12,7 +12,8 @@ server.app.use('/user', userRoutes);
 // Conectarr DB
 mongoose.connect('mongodb://localhost:27017/fotosgram', {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useUnifiedTopology: true
 }, (err) => {
     if ( err ) throw err;
 
