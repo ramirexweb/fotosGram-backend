@@ -2,12 +2,18 @@ import Server from './classes/server';
 import userRoutes from './routes/usuario.routes';
 import mongoose from 'mongoose';
 import 'colorts/lib/string';
+import express from 'express';
 
 
 const server = new Server();
 
+server.app.use(express.urlencoded({
+    extended: true
+}));
+
 // Rutas app
 server.app.use('/user', userRoutes);
+server.app.use(express.json());
 
 // Conectarr DB
 mongoose.connect('mongodb://localhost:27017/fotosgram', {
