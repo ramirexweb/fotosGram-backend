@@ -1,8 +1,9 @@
 import Server from './classes/server';
-import userRoutes from './routes/usuario.routes';
 import mongoose from 'mongoose';
 import 'colorts/lib/string';
 import express from 'express';
+import userRoutes from './routes/usuario.routes';
+import postRoutes from './routes/post.routes';
 
 
 const server = new Server();
@@ -10,10 +11,11 @@ const server = new Server();
 server.app.use(express.urlencoded({
     extended: true
 }));
+server.app.use(express.json());
 
 // Rutas app
 server.app.use('/user', userRoutes);
-server.app.use(express.json());
+server.app.use('/posts', postRoutes);
 
 // Conectarr DB
 mongoose.connect('mongodb://localhost:27017/fotosgram', {
