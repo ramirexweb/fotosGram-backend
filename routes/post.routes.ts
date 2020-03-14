@@ -1,8 +1,11 @@
 import { Router, Response } from "express";
 import { verificarToken } from '../middlewares/autenticacion';
 import { Post } from '../models/post.model';
+import { FileUpload } from '../interfaces/file-uploads';
+import FileSystem from '../classes/file-system';
 
 const postRoutes = Router();
+const fileSystem = new FileSystem();
 
 // obtener post
 postRoutes.get('/', async ( req: any, res: Response) => {
@@ -32,6 +35,9 @@ postRoutes.post('/', [ verificarToken], ( req: any, res: Response) => {
     const body = req.body;
     body.usuario = req.usuario._id;
 
+    const imagenes = fileSystem.imagenesDeTempHaciaPost( req.usuario._id);
+    body.imgs = imagenes;
+
 
     Post.create( body )
         .then( async postDB => {
@@ -46,6 +52,39 @@ postRoutes.post('/', [ verificarToken], ( req: any, res: Response) => {
         .catch( err => {
             res.json(err)
         });
+});
+
+// Servicio para subir archivos
+postRoutes.post('/upload', [verificarToken], async( req: any, res: Response) => {
+    if ( !req.files ) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'No se subio ningun archivo'
+        });
+    }
+
+    const file: FileUpload = req.files.image;
+
+    if ( !file ) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'No se subio ningun archivo --'
+        });
+    }
+
+    if ( !file.mimetype.includes('image')) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Lo que subio no es una imagen'
+        });
+    }
+    
+    await fileSystem.guardarImagenTemporal( file, req.usuario._id);
+
+    res.json({
+        ok: true,
+        file: file.mimetype
+    });
 });
 
 
